@@ -8,6 +8,12 @@ def hello_world():
     return 'Hello WITEBREAD!'
 
 
+@app.route('/new', method=['POST'])
+def neww():
+    content = request.get_json()
+    print(content)
+    return str(content)
+
 
 if __name__ == '__main__':
     app.run()
