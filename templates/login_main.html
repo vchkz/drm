@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block title %} Главная страница {% endblock %}
+
+{% block body %}
+<h1>Главная страница</h1>
+<form action="/login" method="post" class="form-contact">
+<p><label>Email: </label> <input type="text" name="email" value="" requied />
+<p><label>Пароль: </label> <input type="password" name="psw" value="" requied />
+<p><input type="submit" value="Войти" />
+<hr align=left width="300px">
+</form>
+{% endblock %}
