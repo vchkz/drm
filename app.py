@@ -19,7 +19,7 @@ def user_page():
 @app.route('/admin')  # Страница админа
 def admin_page():
     user_list_admin_page = [((str(i[0])), i[2]) for i in dataBase.get_users() if not i[1]]
-    # print(dataBase.get_id_ser_num_with_user_id(7))
+    # print(dataBase.get_serial_numbers_access(7))
     return render_template("admin_page.html", user_list_admin_page=user_list_admin_page)
 
 
