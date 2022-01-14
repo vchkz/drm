@@ -1,4 +1,5 @@
 # Файл для работы с базой данных
+import csv
 import sqlite3
 
 con = sqlite3.connect('database.db', check_same_thread=False)
@@ -14,10 +15,16 @@ def add_serial_number(serial_number):
     con.commit()
 
 
-# Добавление данных, полученных с сервера
-def add_data(data):
-    # Сделаю после получения данных
-    pass
+# Добавление данных, полученных с сервера по серийному номеру
+# data - список списков, полученных из csv.reader
+def add_data(serial_number_id, data):
+    for line in data:
+        line = [str(serial_number_id)] + [i if i != '' else '""' for i in line]
+        line[1] = '"' + line[1] + '"'
+        line[2] = '"' + line[2] + '"'
+        line = ', '.join(line)
+        cursor.execute('''INSERT INTO data VALUES ({})'''.format(line))
+    con.commit()
 
 
 # Добавление пользователя
