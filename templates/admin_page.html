@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block title %} Панель администратора {% endblock %}
+
+{% block body %}
+
+<h1>Панель администратора</h1>
+
+<a href="/admin/new-user" class="btn">Добавить нового пользователя</a>
+
+{%for ser_num, user in user_list_admin_page%}
+<h3>{{user}}</h3>
+Этот пользователь имеет доступ к следующим АКЭС:
+{%for number in ser_num%}
+{{number}}
+{% endfor %}
+<button class="btn">Тут будет плюсик</button>
+{% endfor %}
+
+{% endblock %}

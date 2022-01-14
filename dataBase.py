@@ -1,8 +1,7 @@
 # Файл для работы с базой данных
 import sqlite3
 
-
-con = sqlite3.connect('database.db')
+con = sqlite3.connect('database.db', check_same_thread=False)
 cursor = con.cursor()
 
 
@@ -20,9 +19,12 @@ def add_data(data):
 
 
 def add_user(user_type, login, password):
-    cursor.execute('''INSERT INTO users (type, login, password) VALUES (?, ?, ?)''',
-                   (user_type, login, password))
-    con.commit()
+    try:
+        cursor.execute('''INSERT INTO users (type, login, password) VALUES (?, ?, ?)''',
+                       (user_type, login, password))
+        con.commit()
+    except:
+        print('проблемка')
 
 
 def add_access(user_login, serial_number):
@@ -40,9 +42,18 @@ def get_user(id):
                           (id,)).fetchone()[0]
 
 
+def get_users():
+    return cursor.execute('''SELECT * FROM users''').fetchall()
+
+
 def get_serial_number(id):
     return cursor.execute('''SELECT serial_number FROM serial_numbers WHERE id=?''',
                           (id,)).fetchone()[0]
+
+
+def get_id_ser_num_with_user_id(user_id):
+    return cursor.execute('''SELECT serial_number FROM access WHERE user_id=?''',
+                          (user_id,)).fetchone()[0]
 
 
 def get_user_id(user_login):

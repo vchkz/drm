@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block title %} Создать нового пользователя {% endblock %}
+
+{% block body %}
+<h3>Придумайте логин и пароль для нового пользователя</h3>
+<form method="post" class="form-contact">
+<p><label>Логин: </label> <input type="text" name="new_login" value="" />
+<p><label>Пароль: </label> <input type="text" name="psw" value="" />
+<h3>Ведите сирийный номер АКЭС:</h3>
+<p><label>Сирийный номер АКЭС: </label> <input type="text" name="serial_number" value="" />
+<p><input type="submit" value="Создать" />
+<hr align=left width="300px">
+</form>
+{% endblock %}
