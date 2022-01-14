@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block title %} Главная страница {% endblock %}
+
+{% block body %}
+<h1>Главная страница</h1>
+{% for msg in get_flashed_messages() %}
+<div class="flash">{{msg}}</div>
+{% endfor %}
+<form action="/contact" method="post" class="form-contact">
+<p><label>Логин: </label> <input type="text" name="email" value="" requied />
+<p><label>Пароль: </label> <input type="password" name="psw" value="" requied />
+<p><input type="submit" value="Войти" />
+<hr align=left width="300px">
+</form>
+{% endblock %}

@@ -9,7 +9,7 @@ app.config["SECRET_KEY"] = "fhmvsktf678"
 
 @app.route('/')  # Главная
 def main():
-    return render_template("contact.html")
+    return render_template("Cont.html")
 
 
 @app.route('/contact', methods=["POST", "GET"])  # вход пользователя
@@ -19,7 +19,7 @@ def contact():
             flash("Авторизация выполнена")
         else:
             flash("Ошибка")
-    return render_template("contact.html")
+    return render_template("Cont.html")
 
 
 @app.route('/user/<username>')  # Страница пользователя
