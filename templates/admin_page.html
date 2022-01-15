@@ -9,11 +9,31 @@
 
 {%for ser_num, user in user_list_admin_page%}
 <h3>{{user}}</h3>
+
 Этот пользователь имеет доступ к следующим АКЭС:
 {%for number in ser_num%}
-{{number}}
+<p>
+
+<form action="/admin/delete-serial-number" method="POST">
+    {{number}}
+    <input type="hidden" name="delete_sernum" value="{{user, number}}">
+    <input type="submit" class="btn btn-dark" value="Удалить">
+</form>
 {% endfor %}
-<button class="btn">Тут будет плюсик</button>
+<button style="background-color: green" onclick="var h = document.getElementById('{{user}}'); if(h.style.display=='none') {h.style.display = '';} else {h.style.display = 'none';}">+</button>
+<form method="post" class="form-contact">
+    <div style="display: none" id="{{user}}">
+        Введите серийный номер:
+        <input type="text" name="ser_num" value="" />
+        <input style="display: none" type="text" name="user" value="{{user}}" />
+        <input type="submit" value="Создать" />
+    </div>
+</form>
 {% endfor %}
 
+
+<script>
+
+</script>
 {% endblock %}
+
