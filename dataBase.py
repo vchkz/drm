@@ -1,5 +1,4 @@
 # Файл для работы с базой данных
-import csv
 import sqlite3
 
 con = sqlite3.connect('database.db', check_same_thread=False)
@@ -95,3 +94,12 @@ def get_serial_number_id(serial_number):
 def get_data(serial_number):
     return cursor.execute('''SELECT * FROM data WHERE serial_number=?''',
                           (serial_number,)).fetchall()
+
+
+# Удаление данных
+
+# Удалить доступ пользователя к определённому серийному номеру
+def del_access(user_id, serial_number):
+    cursor.execute('''DELETE FROM access WHERE user_id=? and serial_number=?''',
+                   (user_id, serial_number))
+    con.commit()
