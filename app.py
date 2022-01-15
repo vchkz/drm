@@ -1,10 +1,22 @@
-from flask import Flask, request, render_template, flash, url_for, session, redirect
+from flask import Flask, request, render_template, flash, url_for, session, redirect, abort
 import csv
 import io
 import dataBase
+from flask_login import LoginManager, login_required, logout_user, current_user
+from log_in import UserLogin
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "fhmvsktf678"
+
+login_manager = LoginManager(app)
+login_manager.login_view = "contact"
+login_manager.login_message = "Авторизуйтесь для доступа к закрытым страницам"
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    print("load_user")
+    return UserLogin().fromDB(user_id, dataBase)
 
 
 @app.route('/')  # Главная
@@ -15,16 +27,31 @@ def main():
 @app.route('/contact', methods=["POST", "GET"])  # вход пользователя
 def contact():
     if request.method == "POST":
-        if len(request.form["email"]) >= 4 and len(request.form["psw"]) > 2:
-            flash("Авторизация выполнена")
+        if len(request.form["username"]) >= 4 and len(request.form["psw"]) > 4 and "userLogged" in session:
+            return redirect(url_for("user", username=session["userLogged"]))
+        elif request.method == "POST" and request.form["username"] == "test" and request.form["psw"] == "test":
+            session["userLogged"] = request.form["username"]
+            return redirect(url_for("admin_page", username=session["userLogged"]))
         else:
             flash("Ошибка")
     return render_template("Cont.html")
 
 
+@app.route("/logout")  # выход из профиля
+@login_required
+def logout():
+    logout_user()
+    flash("Вы вышли из аккаунта", "success")
+    return redirect(url_for("contact"))
+
+
 @app.route('/user/<username>')  # Страница пользователя
+@login_required
 def user(username):
-    return f"Профиль пользователя: {username}"
+    if 'userLogged' not in session or session['userLogged'] != username:
+        abort(401)
+    return f"""<p><a href="{url_for("logout")}">Выйти из профиля</a>
+                <p>user info: {current_user.get_id()}"""
 
 
 @app.route('/admin/delete-serial-number', methods=['POST'])  # Вспомогательная страница (Зайти сюда нельзя)
@@ -37,6 +64,7 @@ def delete_serial_number():
         print(login, ser_num)
         dataBase.del_access(dataBase.get_user_id(login), dataBase.get_serial_number_id(ser_num))
     return redirect('/admin')
+
 
 @app.route('/admin', methods=['GET', 'POST'])  # Страница админа
 def admin_page():
@@ -69,17 +97,6 @@ def admin_page():
                             for i in dataBase.get_users() if not i[1]]
 
     return render_template("admin_page.html", user_list_admin_page=user_list_admin_page)
-
-
-@app.route("/login", methods=["POST", "GET"])
-def login():
-    if 'userLogged' in session:
-        return redirect(url_for('user', username=session['userLogged']))
-    elif request.form['username'] == "test" and request.form['psw'] == "test":
-        session['userLogged'] = request.form['email']
-        return redirect(url_for('admin', username=session['userLogged']))
-
-    return render_template('login_main.html', title="Авторизация")
 
 
 @app.route('/admin/new-user', methods=['GET', 'POST'])  # Страница создания нового пользователя

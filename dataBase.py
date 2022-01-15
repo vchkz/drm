@@ -51,8 +51,11 @@ def add_access(user_login, serial_number):
 # Получить пользователя из таблицы пользователей
 # Возвращает данные в порядке id, тип пользователя (админ или не админ), логин, пароль
 def get_user(id):
-    return cursor.execute('''SELECT * FROM users WHERE id=?''',
+    try:
+        cursor.execute('''SELECT * FROM users WHERE id=?''',
                           (id,)).fetchone()[0]
+    except:
+        return("ошибка")
 
 
 # Получить всех пользователей в системе
