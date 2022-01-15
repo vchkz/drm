@@ -31,7 +31,11 @@ def user(username):
 def delete_serial_number():
     if request.method == 'POST':
         del_sernum = request.form['delete_sernum']
-        print(del_sernum)  # ещё не готово
+        del_sernum = del_sernum[1:-1].split(', ')
+        login = del_sernum[0][1:-1]
+        ser_num = int(del_sernum[1])
+        print(login, ser_num)
+        dataBase.del_access(dataBase.get_user_id(login), dataBase.get_serial_number_id(ser_num))
     return redirect('/admin')
 
 @app.route('/admin', methods=['GET', 'POST'])  # Страница админа
