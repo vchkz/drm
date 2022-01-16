@@ -1,40 +1,51 @@
-from flask import Flask, request, render_template, flash, url_for, session, redirect, abort
+from flask import Flask, request, render_template, flash, url_for, redirect, session
 import csv
 import io
 import dataBase
-from flask_login import LoginManager, login_required, logout_user, current_user
-from log_in import UserLogin
+from flask_login import LoginManager, login_required, logout_user, current_user, UserMixin, login_user
+
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "fhmvsktf678"
 
 login_manager = LoginManager(app)
-login_manager.login_view = "contact"
-login_manager.login_message = "Авторизуйтесь для доступа к закрытым страницам"
+
+
+class User(UserMixin):
+    pass
+
+
+@app.route('/', methods=["POST", "GET"])  # Главная
+def main():
+    if request.method == "POST":
+        username = request.form['username']
+        try:
+            passwordVerif = dataBase.get_user(dataBase.get_user_id(username))[3]
+        except:
+            passwordVerif = None
+
+        if request.form['password'] == passwordVerif:
+            user = User()
+            user.id = username
+            login_user(user)
+            if dataBase.get_user(dataBase.get_user_id(username))[1] == 0:
+                return redirect('/user')
+            else:
+                return redirect('/admin')
+        else:
+            flash("Неверный логин или пароль", "success")
+            return redirect('/')
+
+
+    return render_template("Cont.html")
 
 
 @login_manager.user_loader
-def load_user(user_id):
-    print("load_user")
-    return UserLogin().fromDB(user_id, dataBase)
-
-
-@app.route('/')  # Главная
-def main():
-    return render_template("Cont.html")
-
-
-@app.route('/contact', methods=["POST", "GET"])  # вход пользователя
-def contact():
-    if request.method == "POST":
-        if len(request.form["username"]) >= 4 and len(request.form["psw"]) > 4 and "userLogged" in session:
-            return redirect(url_for("user", username=session["userLogged"]))
-        elif request.method == "POST" and request.form["username"] == "test" and request.form["psw"] == "test":
-            session["userLogged"] = request.form["username"]
-            return redirect(url_for("admin_page", username=session["userLogged"]))
-        else:
-            flash("Ошибка")
-    return render_template("Cont.html")
+def user_loader(user_id):
+    dataBase.get_user(user_id)
+    user = User()
+    user.id = user_id
+    return user
 
 
 @app.route("/logout")  # выход из профиля
@@ -42,16 +53,15 @@ def contact():
 def logout():
     logout_user()
     flash("Вы вышли из аккаунта", "success")
-    return redirect(url_for("contact"))
+    return redirect('/')
 
 
-@app.route('/user/<username>')  # Страница пользователя
+@app.route('/user')  # Страница пользователя
 @login_required
-def user(username):
-    if 'userLogged' not in session or session['userLogged'] != username:
-        abort(401)
-    return f"""<p><a href="{url_for("logout")}">Выйти из профиля</a>
-                <p>user info: {current_user.get_id()}"""
+def user():
+    # sernum_list =
+    # return render_template("admin_page.html", sernum_list=sernum_list)
+    return render_template("user_page.html")
 
 
 @app.route('/admin/delete-serial-number', methods=['POST'])  # Вспомогательная страница (Зайти сюда нельзя)
@@ -67,6 +77,7 @@ def delete_serial_number():
 
 
 @app.route('/admin', methods=['GET', 'POST'])  # Страница админа
+@login_required
 def admin_page():
     if request.method == 'POST':
         new_serial_number = request.form['ser_num']
