@@ -27,3 +27,4 @@ virtualenv==20.13.0
 websocket-client==1.0.1
 wrapt==1.12.1
 flask
+flask_login
