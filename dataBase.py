@@ -52,8 +52,8 @@ def add_access(user_login, serial_number):
 # Возвращает данные в порядке id, тип пользователя (админ или не админ), логин, пароль
 def get_user(id):
     try:
-        cursor.execute('''SELECT * FROM users WHERE id=?''',
-                          (id,)).fetchone()[0]
+        return cursor.execute('''SELECT * FROM users WHERE id=?''',
+                          (id,)).fetchone()
     except:
         return("ошибка")
 
