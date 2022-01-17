@@ -2,36 +2,63 @@
 {% block title %} Панель администратора {% endblock %}
 
 {% block body %}
+<div class="container">
+    <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
+        <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-dark text-decoration-none">
+            <span class="fs-4">Мониторинг комплекса энергосбережения</span>
+        </a>
 
-<h1>Панель администратора</h1>
+        <ul class="nav nav-pills">
+            <li class="nav-item"><a href="/admin/new-user" class="btn btn-outline-success">Добавить нового
+                пользователя</a></li>
+            <li class="nav-item"><a href="/logout" class="nav-link">Выйти</a></li>
+        </ul>
+    </header>
 
-<a href="/admin/new-user" class="btn">Добавить нового пользователя</a>
+    <h5>Панель администратора</h5>
 
-{%for ser_num, user in user_list_admin_page%}
-<h3>{{user}}</h3>
 
-Этот пользователь имеет доступ к следующим АКЭС:
-{%for number in ser_num%}
-<p>
+    {%for ser_num, user in user_list_admin_page%}
+    <div class="row border">
+        <div class="col-6 p-4">
+            <h3 class="p-2">{{user}}</h3>
+            <button class="btn btn-outline-success"
+                    onclick="var h = document.getElementById('{{user}}'); if(h.style.display=='none') {h.style.display = '';} else {h.style.display = 'none';}">
+                Добавить новую АКЭС
+            </button>
 
-<form action="/admin/delete-serial-number" method="POST">
-    {{number}}
-    <input type="hidden" name="delete_sernum" value="{{user, number}}">
-    <input type="submit" class="btn btn-dark" value="Удалить">
-</form>
-{% endfor %}
-<button style="background-color: green" onclick="var h = document.getElementById('{{user}}'); if(h.style.display=='none') {h.style.display = '';} else {h.style.display = 'none';}">+</button>
-<form method="post" class="form-contact">
-    <div style="display: none" id="{{user}}">
-        Введите серийный номер:
-        <input type="text" name="ser_num" value="" />
-        <input style="display: none" type="text" name="user" value="{{user}}" />
-        <input type="submit" value="Создать" />
+            <form method="post" class="form-contact">
+
+                    <div class="row p-3" style="display: none" id="{{user}}">
+                        <div class="col-5">Введите серийный номер:</div>
+                        <div class="col"><input class="form-control" type="text" name="ser_num" value=""/></div>
+                        <input style="display: none" type="text" name="user" value="{{user}}"/>
+                        <div class="col"><input class="btn btn-success" type="submit" value="Создать"/></div>
+
+
+                </div>
+            </form>
+
+        </div>
+        <div class="col">
+            {%for number in ser_num%}
+            <div class="row border p-2">
+                <div class="col p-2">{{number}}</div>
+                <div class="col p-2">
+                    <form action="/admin/delete-serial-number" method="POST">
+                        <input type="hidden" name="delete_sernum" value="{{user, number}}">
+                        <input type="submit" class="btn btn-outline-danger" value="Удалить">
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+
     </div>
-</form>
-{% endfor %}
 
 
-<p><a href="/logout">Выйти из профиля</a>
-{% endblock %}
+    {% endfor %}
 
+    {% endblock %}
+</div>

@@ -2,15 +2,39 @@
 {% block title %} Доступные АКЭС {% endblock %}
 
 {% block body %}
-<h1>Здравствуйте, {{username}}</h1>
+<div class="container">
+    <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
+      <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-dark text-decoration-none">
+        <span class="fs-4">Мониторинг комплекса энергосбережения</span>
+      </a>
+
+      <ul class="nav nav-pills">
+        <li class="nav-item"><a href="/logout" class="nav-link">Выйти</a></li>
+      </ul>
+    </header>
+<h3>Здравствуйте, {{username}}!</h3>
 <p>
 Доступные АКЭС:
-<p>
-{%for serial_num in serial_numbers%}
-    <a href="/aesc/{{serial_num}}">{{serial_num}}</a><p>
+    {%for serial_num in serial_numbers%}
+  <div class="row border">
 
-{% endfor %}
+    <div class="col-8">
+      <div class="fs-3 p-3">{{serial_num}}</div>
+    </div>
+    <div class="col-4 p-3 ">
+      <a href="/aesc/{{serial_num}}" type="button" class="btn btn-primary btn-lg">Посмотреть информацию</a>
+    </div>
 
-<p><a href="/logout">Выйти из профиля</a>
+  </div>
+    {% endfor %}
+</div>
+
+
+
+
+
+</div>
 {% endblock %}
+
+
 

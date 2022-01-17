@@ -2,6 +2,17 @@
 {% block title %} Создать нового пользователя {% endblock %}
 
 {% block body %}
+<div class="container">
+    <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
+      <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-dark text-decoration-none">
+        <span class="fs-4">Мониторинг комплекса энергосбережения</span>
+      </a>
+
+      <ul class="nav nav-pills">
+        <li class="nav-item"><a href="/logout" class="nav-link">Выйти</a></li>
+      </ul>
+    </header>
+  </div>
 <h3>Придумайте логин и пароль для нового пользователя</h3>
 <form method="post" class="form-contact">
 <p><label>Логин: </label> <input type="text" name="new_login" value="" />

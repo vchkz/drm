@@ -2,6 +2,18 @@
 {% block title %} Доступные АКЭС {% endblock %}
 
 {% block body %}
+<div class="container">
+    <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
+      <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-dark text-decoration-none">
+        <span class="fs-4">Мониторинг комплекса энергосбережения</span>
+      </a>
+
+      <ul class="nav nav-pills">
+        <li class="nav-item"><a href="/" class="nav-link active" aria-current="page">Главная</a></li>
+        <li class="nav-item"><a href="/logout" class="nav-link">Выйти</a></li>
+      </ul>
+    </header>
+  </div>
 <h1>Адаптивный комплекс энергосбережения {{serial_number}}</h1>
 <p>
 Тут информация про АКЭС (графики и т.п)
