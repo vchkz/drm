@@ -2,8 +2,14 @@
 {% block title %} Доступные АКЭС {% endblock %}
 
 {% block body %}
+<h1>Здравствуйте, {{username}}</h1>
+<p>
+Доступные АКЭС:
+<p>
+{%for serial_num in serial_numbers%}
+    <a href="/aesc/{{serial_num}}">{{serial_num}}</a><p>
 
-Ну типа это страница пользователя, потом доделаю
+{% endfor %}
 
 <p><a href="/logout">Выйти из профиля</a>
 {% endblock %}

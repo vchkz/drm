@@ -36,6 +36,15 @@ def main():
             flash("Неверный логин или пароль", "success")
             return redirect('/')
 
+     #авторизованного пользователея перебрасывает на /user или /admin ели он пытается зайти на главную
+    try:
+        username = session['_user_id']
+        if dataBase.get_user(dataBase.get_user_id(username))[1] == 0:
+            return redirect('/user')
+        else:
+            return redirect('/admin')
+    except:
+        pass
 
     return render_template("Cont.html")
 
@@ -59,9 +68,23 @@ def logout():
 @app.route('/user')  # Страница пользователя
 @login_required
 def user():
-    # sernum_list =
-    # return render_template("admin_page.html", sernum_list=sernum_list)
-    return render_template("user_page.html")
+    username = session['_user_id']
+
+    serial_numbers = list(map(lambda x: dataBase.get_serial_number(x),
+                              dataBase.get_serial_numbers_access(dataBase.get_user_id(username))))
+    return render_template("user_page.html", username=username, serial_numbers=serial_numbers)
+
+
+@app.route('/aesc/<aesc_serial_number>')  # Страница пользователя
+@login_required
+def aesc(aesc_serial_number):
+    username = session['_user_id']
+    serial_numbers = list(map(lambda x: dataBase.get_serial_number(x),
+                              dataBase.get_serial_numbers_access(dataBase.get_user_id(username))))
+    if int(aesc_serial_number) in serial_numbers:
+        return render_template("aesc_page.html", username=username, serial_number=aesc_serial_number)
+    else:
+        return 'Доступ запрещён'
 
 
 @app.route('/admin/delete-serial-number', methods=['POST'])  # Вспомогательная страница (Зайти сюда нельзя)
@@ -106,6 +129,9 @@ def admin_page():
     user_list_admin_page = [(list(map(lambda x: dataBase.get_serial_number(x),
                                       dataBase.get_serial_numbers_access(i[0]))), i[2])
                             for i in dataBase.get_users() if not i[1]]
+
+    if dataBase.get_user(dataBase.get_user_id(session['_user_id']))[1] == 0:
+        return 'Доступ запрещён'
 
     return render_template("admin_page.html", user_list_admin_page=user_list_admin_page)
 
