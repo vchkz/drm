@@ -4,20 +4,42 @@
 {% block body %}
 <div class="container">
     <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
-      <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-dark text-decoration-none">
-        <span class="fs-4">Мониторинг комплекса энергосбережения</span>
-      </a>
+        <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-dark text-decoration-none">
+            <span class="fs-4">Мониторинг комплекса энергосбережения</span>
+        </a>
 
-      <ul class="nav nav-pills">
-        <li class="nav-item"><a href="/" class="nav-link active" aria-current="page">Главная</a></li>
-        <li class="nav-item"><a href="/logout" class="nav-link">Выйти</a></li>
-      </ul>
+        <ul class="nav nav-pills">
+            <li class="nav-item"><a href="/" class="nav-link active" aria-current="page">Главная</a></li>
+            <li class="nav-item"><a href="/logout" class="nav-link">Выйти</a></li>
+        </ul>
     </header>
-  </div>
-<h1>Адаптивный комплекс энергосбережения {{serial_number}}</h1>
-<p>
-Тут информация про АКЭС (графики и т.п)
-<button type="button" class="btn btn-primary" data-toggle="popover" title="Сообщение" >Если видиш эту кнопку значит будстрап работает</button>
+    <h1 class="p-4">Адаптивный комплекс энергосбережения {{serial_number}}</h1>
+    <div class="row">
+        <div class="col-5">
+            <form>
+                <p>Укажите неделю:
+                    <input type="week" name="week">
+                    <input type="submit" class="btn btn-outline-secondary" value="Выбрать"></p>
+            </form>
+        </div>
+        <div class="col-2">
+            ИЛИ
+        </div>
+        <div class="col-5">
+            <form>
+                <p>Укажите день:
+                    <input type="date" class="" name="day">
+                    <input type="submit" class="btn btn-outline-secondary" value="Выбрать"></p>
+            </form>
+        </div>
+    </div>
+    <p>
+    {% block data_aesc %}{% endblock %}
 
-{% endblock %}
+</div>
+
+
+
+
+    {% endblock %}
 

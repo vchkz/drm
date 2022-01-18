@@ -1,9 +1,9 @@
 from flask import Flask, request, render_template, flash, url_for, redirect, session
 import csv
 import io
+import datetime
 import dataBase
 from flask_login import LoginManager, login_required, logout_user, current_user, UserMixin, login_user
-
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "fhmvsktf678"
@@ -36,7 +36,7 @@ def main():
             flash("Неверный логин или пароль", "success")
             return redirect('/')
 
-     #авторизованного пользователея перебрасывает на /user или /admin ели он пытается зайти на главную
+    # авторизованного пользователея перебрасывает на /user или /admin ели он пытается зайти на главную
     try:
         username = session['_user_id']
         if dataBase.get_user(dataBase.get_user_id(username))[1] == 0:
@@ -75,16 +75,43 @@ def user():
     return render_template("user_page.html", username=username, serial_numbers=serial_numbers)
 
 
-@app.route('/aesc/<aesc_serial_number>')  # Страница пользователя
+@app.route('/aesc/<aesc_serial_number>')  # Страница конкретной АКЭС
 @login_required
 def aesc(aesc_serial_number):
     username = session['_user_id']
     serial_numbers = list(map(lambda x: dataBase.get_serial_number(x),
                               dataBase.get_serial_numbers_access(dataBase.get_user_id(username))))
-    if int(aesc_serial_number) in serial_numbers:
-        return render_template("aesc_page.html", username=username, serial_number=aesc_serial_number)
-    else:
+
+    if int(aesc_serial_number) not in serial_numbers:
         return 'Доступ запрещён'
+
+    week = request.args.get('week')
+    day = request.args.get('day')
+    id_serial_number = dataBase.get_serial_number_id(int(aesc_serial_number))
+    print()
+    if day:
+        day = day.split('-')[2] + '.' + day.split('-')[1] + '.' + day.split('-')[0]
+        data = str([i for i in dataBase.get_data(id_serial_number) if str(i[1].split()[0]) == day])
+        # data - это данные за определённый день
+        return render_template('data.html', data=data, serial_number=aesc_serial_number, period=day)
+    if week:
+        n_week = datetime.datetime.strptime(week + '-1', '%G-W%V-%u').toordinal()
+        k_week = datetime.datetime.strptime(week + '-7', '%G-W%V-%u').toordinal()
+        start_week = str(datetime.datetime.strptime(week + '-1', '%G-W%V-%u')).split()[0]
+        end_week = str(datetime.datetime.strptime(week + '-7', '%G-W%V-%u')).split()[0]
+        period = 'C ' + start_week + ' по ' + end_week
+        data = str([i for i in dataBase.get_data(id_serial_number) if
+                    n_week <= datetime.datetime.strptime(i[1].split()[0], "%d.%m.%Y").toordinal() <= k_week])
+        # data - это данные за определённую неделю
+        return render_template('data.html', data=data, serial_number=aesc_serial_number, period=period)
+
+    return render_template("aesc_page.html", username=username, serial_number=aesc_serial_number)
+
+
+@app.route('/obr', methods=['POST'])  # Вспомогательная страница (Зайти сюда нельзя)
+def obr():
+    week = request.form['week']
+    return week
 
 
 @app.route('/admin/delete-serial-number', methods=['POST'])  # Вспомогательная страница (Зайти сюда нельзя)
@@ -125,7 +152,6 @@ def admin_page():
 
         return redirect('/admin')
 
-
     user_list_admin_page = [(list(map(lambda x: dataBase.get_serial_number(x),
                                       dataBase.get_serial_numbers_access(i[0]))), i[2])
                             for i in dataBase.get_users() if not i[1]]
@@ -143,7 +169,6 @@ def create_user():
         new_password = request.form['psw']
         new_serial_number = request.form['serial_number']
 
-
         if new_login not in list(map(lambda x: x[2], dataBase.get_users())):
             dataBase.add_user(0, new_login, new_password)
         else:
@@ -156,7 +181,6 @@ def create_user():
             dataBase.add_serial_number(new_serial_number)
         except:
             pass
-
 
         dataBase.add_access(new_login, new_serial_number)
 
