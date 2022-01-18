@@ -93,6 +93,8 @@ def aesc(aesc_serial_number):
         day = day.split('-')[2] + '.' + day.split('-')[1] + '.' + day.split('-')[0]
         data = str([i for i in dataBase.get_data(id_serial_number) if str(i[1].split()[0]) == day])
         # data - это данные за определённый день
+        if data == []:
+            data = 'За этот период нет данных'
         return render_template('data.html', data=data, serial_number=aesc_serial_number, period=day)
     if week:
         n_week = datetime.datetime.strptime(week + '-1', '%G-W%V-%u').toordinal()
@@ -100,9 +102,12 @@ def aesc(aesc_serial_number):
         start_week = str(datetime.datetime.strptime(week + '-1', '%G-W%V-%u')).split()[0]
         end_week = str(datetime.datetime.strptime(week + '-7', '%G-W%V-%u')).split()[0]
         period = 'C ' + start_week + ' по ' + end_week
-        data = str([i for i in dataBase.get_data(id_serial_number) if
-                    n_week <= datetime.datetime.strptime(i[1].split()[0], "%d.%m.%Y").toordinal() <= k_week])
+        data = ([i for i in dataBase.get_data(id_serial_number) if
+                 n_week <= datetime.datetime.strptime(i[1].split()[0], "%d.%m.%Y").toordinal() <= k_week])
         # data - это данные за определённую неделю
+        if data == []:
+            data = 'За этот период нет данных'
+        data = str(data)  # в будущем от этого надо избавится
         return render_template('data.html', data=data, serial_number=aesc_serial_number, period=period)
 
     return render_template("aesc_page.html", username=username, serial_number=aesc_serial_number)
