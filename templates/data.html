@@ -1,13 +1,30 @@
 {% extends 'aesc_page.html' %}
 {% block data_aesc %}
+{% block title %} Данные по эффективности АКЭС {% endblock %}
 
-
-
-<h3>{{period}}:</h3>
-
-<!--Здесь будут все таблицы и графики-->
-{{data}}
-
-
-
+{% block body %}
+<body>
+    <canvas id="lineChart" width='900' height="400"></canvas>
+    <script>
+        var ctx = document.getElementById("lineChart").getContext("2d");
+    var lineChart = new Chart(ctx, {
+        type: "line",
+        data: {
+            labels: {{ labels | safe }},
+        datasets: [
+            {
+                label: "Эффективность АКЭС",
+                data: {{ values | safe }},
+            fill: false,
+            borderColor: "rgb(13, 110, 253)",
+            lineTension: 0.1
+            }
+        ]
+            },
+        options: {
+            responsive: true
+        }
+        });
+    </script>
+</body>
 {% endblock %}
