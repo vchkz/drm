@@ -91,10 +91,11 @@ def aesc(aesc_serial_number):
     print()
     if day:
         day = day.split('-')[2] + '.' + day.split('-')[1] + '.' + day.split('-')[0]
-        data = str([i for i in dataBase.get_data(id_serial_number) if str(i[1].split()[0]) == day])
+        data = [i for i in dataBase.get_data(id_serial_number) if str(i[1].split()[0]) == day]
         # data - это данные за определённый день
         if data == []:
             data = 'За этот период нет данных'
+        data = str(data)  # в будущем от этого надо избавится
         return render_template('data.html', data=data, serial_number=aesc_serial_number, period=day)
     if week:
         n_week = datetime.datetime.strptime(week + '-1', '%G-W%V-%u').toordinal()
@@ -113,20 +114,13 @@ def aesc(aesc_serial_number):
     return render_template("aesc_page.html", username=username, serial_number=aesc_serial_number)
 
 
-@app.route('/obr', methods=['POST'])  # Вспомогательная страница (Зайти сюда нельзя)
-def obr():
-    week = request.form['week']
-    return week
-
-
 @app.route('/admin/delete-serial-number', methods=['POST'])  # Вспомогательная страница (Зайти сюда нельзя)
 def delete_serial_number():
     if request.method == 'POST':
         del_sernum = request.form['delete_sernum']
         del_sernum = del_sernum[1:-1].split(', ')
         login = del_sernum[0][1:-1]
-        ser_num = int(del_sernum[1])
-        print(login, ser_num)
+        ser_num = str(del_sernum[1])[1:-1]
         dataBase.del_access(dataBase.get_user_id(login), dataBase.get_serial_number_id(ser_num))
     return redirect('/admin')
 
