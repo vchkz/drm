@@ -78,6 +78,8 @@ def user():
 @app.route('/aesc/<aesc_serial_number>')  # Страница конкретной АКЭС
 @login_required
 def aesc(aesc_serial_number):
+    labels = []
+    values = []
     username = session['_user_id']
     serial_numbers = list(map(lambda x: dataBase.get_serial_number(x),
                               dataBase.get_serial_numbers_access(dataBase.get_user_id(username))))
@@ -95,8 +97,18 @@ def aesc(aesc_serial_number):
         # data - это данные за определённый день
         if data == []:
             data = 'За этот период нет данных'
-        data = str(data)  # в будущем от этого надо избавится
-        return render_template('data.html', data=data, serial_number=aesc_serial_number, period=day)
+            return render_template("aesc_page.html", username=username, serial_number=aesc_serial_number)
+        for elem in data:
+            if elem[16] == '':
+                continue
+            labels.append(elem[1])
+            Pon = float(elem[6]) + float(elem[7]) + float(elem[8])  # сумма активной мощности при включенной системе
+            Poff = float(elem[18]) + float(elem[19]) + float(elem[20])
+            # Poff - сумма активной мощности по каждой фазе при выключенной системе
+            n = (Poff-Pon)/Poff * 100  # эффективность
+            values.append(n)
+        return render_template('data.html', labels=labels, values=values)
+
     if week:
         n_week = datetime.datetime.strptime(week + '-1', '%G-W%V-%u').toordinal()
         k_week = datetime.datetime.strptime(week + '-7', '%G-W%V-%u').toordinal()
@@ -108,8 +120,17 @@ def aesc(aesc_serial_number):
         # data - это данные за определённую неделю
         if data == []:
             data = 'За этот период нет данных'
-        data = str(data)  # в будущем от этого надо избавится
-        return render_template('data.html', data=data, serial_number=aesc_serial_number, period=period)
+            return render_template("aesc_page.html", username=username, serial_number=aesc_serial_number)
+        for elem in data:
+            if elem[16] == '':
+                continue
+            labels.append(elem[1])
+            Pon = float(elem[6]) + float(elem[7]) + float(elem[8])  # сумма активной мощности при включенной системе
+            Poff = float(elem[18]) + float(elem[19]) + float(elem[20])
+            # Poff - сумма активной мощности по каждой фазе при выключенной системе
+            n = (Poff-Pon)/Poff * 100  # эффективность
+            values.append(int(n))
+        return render_template('data.html', labels=labels, values=values)
 
     return render_template("aesc_page.html", username=username, serial_number=aesc_serial_number)
 
@@ -209,3 +230,5 @@ def pageNotFound(error):  # поиск не существующей стран�
 
 if __name__ == '__main__':
     app.run(debug=True)
+
+# пасхалка. Если кто нашёл, отправьте мне скрин в вк, за нахождение может кину чирик на карту
