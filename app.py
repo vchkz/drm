@@ -106,7 +106,7 @@ def aesc(aesc_serial_number):
             Poff = float(elem[18]) + float(elem[19]) + float(elem[20])
             # Poff - сумма активной мощности по каждой фазе при выключенной системе
             n = (Poff-Pon)/Poff * 100  # эффективность
-            values.append(n)
+            values.append(int(n))
         return render_template('data.html', labels=labels, values=values)
 
     if week:
