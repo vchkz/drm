@@ -1,12 +1,9 @@
 {% extends 'aesc_page.html' %}
 {% block data_aesc %}
-{% endblock %}
-{% block title %} Данные по эффективности АКЭС {% endblock %}
-
-{% block body %}
-<body>
-    <canvas id="lineChart" width='900' height="400"></canvas>
-    <script>
+<h1>{{period}}</h1>
+{% if is_data %}
+<canvas id="lineChart" width='900' height="400"></canvas>
+<script>
         var ctx = document.getElementById("lineChart").getContext("2d");
     var lineChart = new Chart(ctx, {
         type: "line",
@@ -26,6 +23,50 @@
             responsive: true
         }
         });
-    </script>
-</body>
+
+
+</script>
+{% else %}
+<h3>Нет данных по эффективности</h3>
+{% endif %}
+
+
+<table class="table">
+    <thead>
+    <tr class="text-center">
+        <th scope="col">время начала</th>
+        <th scope="col">время окончания</th>
+        <th scope="col">косинус А</th>
+        <th scope="col">косинус В</th>
+        <th scope="col">косинус С</th>
+        <th scope="col">активная мощность A</th>
+        <th scope="col">активная мощность B</th>
+        <th scope="col">активная мощность C</th>
+        <th scope="col">реактивная мощность A</th>
+        <th scope="col">реактивная мощность B</th>
+        <th scope="col">реактивная мощность C</th>
+        <th scope="col">эффективность</th>
+    </tr>
+    </thead>
+    <tbody>
+    {%for d in data%}
+    <tr>
+        <th>{{d[0][1]}}</th>
+        <th>{{d[0][2]}}</th>
+        <th>{{d[0][12]}}</th>
+        <th>{{d[0][13]}}</th>
+        <th>{{d[0][14]}}</th>
+        <th>{{d[0][6]}}</th>
+        <th>{{d[0][7]}}</th>
+        <th>{{d[0][8]}}</th>
+        <th>{{d[0][3]}}</th>
+        <th>{{d[0][4]}}</th>
+        <th>{{d[0][5]}}</th>
+        <th>{{d[1]}}</th>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+
 {% endblock %}

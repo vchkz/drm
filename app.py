@@ -80,12 +80,14 @@ def user():
 def aesc(aesc_serial_number):
     labels = []
     values = []
+    zz = []
     username = session['_user_id']
-    serial_numbers = list(map(lambda x: dataBase.get_serial_number(x),
+    serial_numbers = list(map(lambda x: str(dataBase.get_serial_number(x)),
                               dataBase.get_serial_numbers_access(dataBase.get_user_id(username))))
+    print(serial_numbers)
 
-    if int(aesc_serial_number) not in serial_numbers:
-        return 'Доступ запрещён'
+    if aesc_serial_number not in serial_numbers:
+        return '<h1>Доступ запрещён</h1>'
 
     week = request.args.get('week')
     day = request.args.get('day')
@@ -96,41 +98,56 @@ def aesc(aesc_serial_number):
         data = [i for i in dataBase.get_data(id_serial_number) if str(i[1].split()[0]) == day]
         # data - это данные за определённый день
         if data == []:
-            data = 'За этот период нет данных'
-            return render_template("aesc_page.html", username=username, serial_number=aesc_serial_number)
+            err = f'За {day} нет данных'
+            return render_template("aesc_page.html", username=username, serial_number=aesc_serial_number, err=err)
         for elem in data:
             if elem[16] == '':
-                continue
-            labels.append(elem[1])
-            Pon = float(elem[6]) + float(elem[7]) + float(elem[8])  # сумма активной мощности при включенной системе
-            Poff = float(elem[18]) + float(elem[19]) + float(elem[20])
-            # Poff - сумма активной мощности по каждой фазе при выключенной системе
-            n = (Poff-Pon)/Poff * 100  # эффективность
-            values.append(int(n))
-        return render_template('data.html', labels=labels, values=values)
+                n = '-'
+            else:
+                labels.append(elem[1])
+                Pon = float(elem[6]) + float(elem[7]) + float(elem[8])  # сумма активной мощности при включенной системе
+                Poff = float(elem[18]) + float(elem[19]) + float(elem[20])
+                # Poff - сумма активной мощности по каждой фазе при выключенной системе
+                n = (Poff - Pon) / Poff * 100  # эффективность
+                values.append(int(n))
+            zz.append(n)
+        print(data)
+        is_data = True
+        if not labels:
+            is_data = False
+        return render_template('data.html', labels=labels, values=values, period=day, is_data=is_data,
+                               data=zip(data, zz))
 
     if week:
         n_week = datetime.datetime.strptime(week + '-1', '%G-W%V-%u').toordinal()
         k_week = datetime.datetime.strptime(week + '-7', '%G-W%V-%u').toordinal()
-        start_week = str(datetime.datetime.strptime(week + '-1', '%G-W%V-%u')).split()[0]
-        end_week = str(datetime.datetime.strptime(week + '-7', '%G-W%V-%u')).split()[0]
-        period = 'C ' + start_week + ' по ' + end_week
+        start_week = datetime.datetime.strptime(week + '-1', '%G-W%V-%u')
+        end_week = datetime.datetime.strptime(week + '-7', '%G-W%V-%u')
+        period = 'C ' + start_week.strftime("%d.%m.%Y") + ' по ' + end_week.strftime("%d.%m.%Y")
         data = ([i for i in dataBase.get_data(id_serial_number) if
                  n_week <= datetime.datetime.strptime(i[1].split()[0], "%d.%m.%Y").toordinal() <= k_week])
         # data - это данные за определённую неделю
         if data == []:
-            data = 'За этот период нет данных'
-            return render_template("aesc_page.html", username=username, serial_number=aesc_serial_number)
+            err = f'За период {period} нет данных'
+            return render_template("aesc_page.html", username=username, serial_number=aesc_serial_number, err=err)
+
         for elem in data:
             if elem[16] == '':
-                continue
-            labels.append(elem[1])
-            Pon = float(elem[6]) + float(elem[7]) + float(elem[8])  # сумма активной мощности при включенной системе
-            Poff = float(elem[18]) + float(elem[19]) + float(elem[20])
-            # Poff - сумма активной мощности по каждой фазе при выключенной системе
-            n = (Poff-Pon)/Poff * 100  # эффективность
-            values.append(int(n))
-        return render_template('data.html', labels=labels, values=values)
+                n = '-'
+            else:
+                labels.append(elem[1])
+                Pon = float(elem[6]) + float(elem[7]) + float(elem[8])  # сумма активной мощности при включенной системе
+                Poff = float(elem[18]) + float(elem[19]) + float(elem[20])
+                # Poff - сумма активной мощности по каждой фазе при выключенной системе
+                n = (Poff - Pon) / Poff * 100  # эффективность
+                values.append(int(n))
+            zz.append(n)
+        print(data)
+        is_data = True
+        if not labels:
+            is_data = False
+        return render_template('data.html', labels=labels, values=values, period=period, is_data=is_data,
+                               data=zip(data, zz))
 
     return render_template("aesc_page.html", username=username, serial_number=aesc_serial_number)
 
@@ -224,8 +241,13 @@ def profile(serial_number):
 
 
 @app.errorhandler(404)
-def pageNotFound(error):  # поиск не существующей страницы
+def pageNotFound(error):  # несуществующая страницы
     return render_template("404.html"), 404
+
+
+@app.errorhandler(401)
+def Unauthorized(error):
+    return '<h1>Нет доступа</h1>'
 
 
 if __name__ == '__main__':
