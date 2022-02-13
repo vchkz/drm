@@ -1,9 +1,9 @@
-from flask import Flask, request, render_template, flash, url_for, redirect, session
+from flask import Flask, request, render_template, flash, redirect, session
 import csv
 import io
 import datetime
 import dataBase
-from flask_login import LoginManager, login_required, logout_user, current_user, UserMixin, login_user
+from flask_login import LoginManager, login_required, logout_user, UserMixin, login_user
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "fhmvsktf678"
@@ -51,7 +51,6 @@ def main():
 
 @login_manager.user_loader
 def user_loader(user_id):
-    dataBase.get_user(user_id)
     user = User()
     user.id = user_id
     return user
@@ -84,7 +83,6 @@ def aesc(aesc_serial_number):
     username = session['_user_id']
     serial_numbers = list(map(lambda x: str(dataBase.get_serial_number(x)),
                               dataBase.get_serial_numbers_access(dataBase.get_user_id(username))))
-    print(serial_numbers)
 
     if aesc_serial_number not in serial_numbers:
         return '<h1>Доступ запрещён</h1>'
@@ -92,7 +90,6 @@ def aesc(aesc_serial_number):
     week = request.args.get('week')
     day = request.args.get('day')
     id_serial_number = dataBase.get_serial_number_id(int(aesc_serial_number))
-    print()
     if day:
         day = day.split('-')[2] + '.' + day.split('-')[1] + '.' + day.split('-')[0]
         data = [i for i in dataBase.get_data(id_serial_number) if str(i[1].split()[0]) == day]
@@ -111,7 +108,7 @@ def aesc(aesc_serial_number):
                 n = (Poff - Pon) / Poff * 100  # эффективность
                 values.append(int(n))
             zz.append(n)
-        print(data)
+
         is_data = True
         if not labels:
             is_data = False
@@ -132,9 +129,10 @@ def aesc(aesc_serial_number):
             return render_template("aesc_page.html", username=username, serial_number=aesc_serial_number, err=err)
 
         for elem in data:
-            if elem[16] == '':
+            if elem[16] == None:
                 n = '-'
             else:
+
                 labels.append(elem[1])
                 Pon = float(elem[6]) + float(elem[7]) + float(elem[8])  # сумма активной мощности при включенной системе
                 Poff = float(elem[18]) + float(elem[19]) + float(elem[20])
@@ -142,7 +140,7 @@ def aesc(aesc_serial_number):
                 n = (Poff - Pon) / Poff * 100  # эффективность
                 values.append(int(n))
             zz.append(n)
-        print(data)
+
         is_data = True
         if not labels:
             is_data = False
@@ -252,5 +250,3 @@ def Unauthorized(error):
 
 if __name__ == '__main__':
     app.run(debug=True)
-
-# пасхалка. Если кто нашёл, отправьте мне скрин в вк, за нахождение может кину чирик на карту
