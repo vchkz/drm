@@ -98,7 +98,7 @@ def aesc(aesc_serial_number):
             err = f'За {day} нет данных'
             return render_template("aesc_page.html", username=username, serial_number=aesc_serial_number, err=err)
         for elem in data:
-            if elem[16] == '':
+            if elem[16] == None:
                 n = '-'
             else:
                 labels.append(elem[1])
