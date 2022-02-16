@@ -23,7 +23,7 @@ def add_serial_number(serial_number):
 # data - список списков, полученных из csv.reader
 def add_data(serial_number_id, data):
     for line in data:
-        line = [str(serial_number_id)] + [i if i != '' else '""' for i in line]
+        line = [str(serial_number_id)] + [i if i != '' else 'None' for i in line]
         line[1] = '"' + line[1] + '"'
         line[2] = '"' + line[2] + '"'
         line = ', '.join(line)
@@ -97,8 +97,8 @@ def get_serial_number_id(serial_number):
 # Возвращает список данных о серийном номере
 # Каждый элемент в формате, как в csv файле, начиная с 1 индекса
 # 0-ой индекс каждого элемента - серийный номер
-def get_data(serial_number):
-    cursor.execute('''SELECT * FROM data WHERE serial_number=%s''', (serial_number,))
+def get_data(serial_number_id):
+    cursor.execute('''SELECT * FROM data WHERE serial_number=%s''', (serial_number_id,))
     return cursor.fetchall()
 
 
@@ -109,4 +109,3 @@ def del_access(user_id, serial_number_id):
     cursor.execute('''DELETE FROM access WHERE user_id=%s and serial_number=%s''',
                    (user_id, serial_number_id))
     con.commit()
-
