@@ -10,7 +10,6 @@ app.config["SECRET_KEY"] = "fhmvsktf678"
 
 login_manager = LoginManager(app)
 
-
 class User(UserMixin):
     pass
 
@@ -139,7 +138,7 @@ def aesc(aesc_serial_number):
                 Pon = float(elem[6]) + float(elem[7]) + float(elem[8])  # сумма активной мощности при включенной системе
                 Poff = float(elem[18]) + float(elem[19]) + float(elem[20])
                 # Poff - сумма активной мощности по каждой фазе при выключенной системе
-                n = (Poff - Pon) / Poff * 100  # эффективность
+                n = round((Poff - Pon) / Poff * 100, 1)  # эффективность
                 values.append(int(n))
             zz.append(n)
 
