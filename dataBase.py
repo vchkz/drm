@@ -23,11 +23,18 @@ def add_serial_number(serial_number):
 # data - список списков, полученных из csv.reader
 def add_data(serial_number_id, data):
     for line in data:
-        line = [str(serial_number_id)] + [i if i != '' else 'None' for i in line]
-        line[1] = '"' + line[1] + '"'
-        line[2] = '"' + line[2] + '"'
+        line = [str(serial_number_id)] + [i if i != '' else "NULL" for i in line]
+        line[1] = "'" + line[1] + "'"
+        line[2] = "'" + line[2] + "'"
         line = ', '.join(line)
-        cursor.execute('''INSERT INTO data VALUES ({})'''.format(line))
+        cursor.execute('''INSERT INTO data 
+        (serial_number, start_time, end_time, react_powerA,
+         react_powerB, react_powerC, active_powerA, active_powerB, 
+         active_powerC, voltageA, voltageB, voltageC, cosA, cosB, 
+         cosC, react_powerA_off, react_powerB_off, react_powerC_off, 
+         active_powerA_off, active_powerB_off, active_powerC_off, 
+         voltageA_off, voltageB_off, voltageC_off, cosA_off, cosB_off, 
+         cosC_off, blocks) VALUES ({})'''.format(line))
     con.commit()
 
 
