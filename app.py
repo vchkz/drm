@@ -84,7 +84,7 @@ def aesc(aesc_serial_number):
                               dataBase.get_serial_numbers_access(dataBase.get_user_id(username))))
 
     if aesc_serial_number not in serial_numbers:
-        error = "У вас нет доступа к этой АКЭС"
+        error = "У вас нет доступа к этому АКЭС"
         return render_template("error.html", error=error)
 
     week = request.args.get('week')
@@ -181,7 +181,7 @@ def admin_page():
             else:
                 return '''
                       <h1>Ошибка</h1>
-                      <h3>У данного пользователя уже есть доступ к этой АКЭС</h3>
+                      <h3>У данного пользователя уже есть доступ к этому АКЭС</h3>
                       <a href="/admin">Вернуться назад</a>
                       '''
         except:
