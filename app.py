@@ -84,7 +84,8 @@ def aesc(aesc_serial_number):
                               dataBase.get_serial_numbers_access(dataBase.get_user_id(username))))
 
     if aesc_serial_number not in serial_numbers:
-        return '<h1>Доступ запрещён</h1>'
+        error = "У вас нет доступа к этой АКЭС"
+        return render_template("error.html", error=error)
 
     week = request.args.get('week')
     day = request.args.get('day')
@@ -193,7 +194,8 @@ def admin_page():
                             for i in dataBase.get_users() if not i[1]]
 
     if dataBase.get_user(dataBase.get_user_id(session['_user_id']))[1] == 0:
-        return 'Доступ запрещён'
+        error = "У вас нет доступа к странице администратора"
+        return render_template("error.html", error=error)
 
     return render_template("admin_page.html", user_list_admin_page=user_list_admin_page)
 
