@@ -105,7 +105,7 @@ def aesc(aesc_serial_number):
                 Pon = float(elem[6]) + float(elem[7]) + float(elem[8])  # сумма активной мощности при включенной системе
                 Poff = float(elem[18]) + float(elem[19]) + float(elem[20])
                 # Poff - сумма активной мощности по каждой фазе при выключенной системе
-                n = (Poff - Pon) / Poff * 100  # эффективность
+                n = round((Poff - Pon) / Poff * 100, 1)  # эффективность
                 values.append(int(n))
             zz.append(n)
 
@@ -123,6 +123,8 @@ def aesc(aesc_serial_number):
         period = 'C ' + start_week.strftime("%d.%m.%Y") + ' по ' + end_week.strftime("%d.%m.%Y")
         data = ([i for i in dataBase.get_data(id_serial_number) if
                  n_week <= datetime.datetime.strptime(i[1].split()[0], "%d.%m.%Y").toordinal() <= k_week])
+        print(data)
+        data.sort(key=lambda x: datetime.datetime.strptime(x[1].split()[0], "%d.%m.%Y").toordinal())
         # data - это данные за определённую неделю
         if data == []:
             err = f'За период {period} нет данных'
@@ -229,10 +231,13 @@ def profile(serial_number):
     file = io.StringIO(request.files['file'].stream.read().decode("UTF-8"), newline=None)
     reader = csv.reader(file, delimiter=';')
     data = list(reader)
+    print(data)
     try:
-        dataBase.add_serial_number(serial_number)
+        print(dataBase.get_serial_number_id(serial_number))
     except:
-        pass  # значит такой серийный номер уже есть
+        dataBase.add_serial_number(serial_number)
+        print('новый детектед')
+
     dataBase.add_data(dataBase.get_serial_number_id(serial_number), data)
 
     return 'success'
