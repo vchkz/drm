@@ -12,12 +12,31 @@
             <li class="nav-item"><a href="/logout" class="nav-link">Выйти</a></li>
         </ul>
     </header>
-    <h3>Придумайте логин и пароль для нового пользователя</h3>
+    <h5>Задайте логин и пароль для нового пользователя:</h5>
     <form method="post" class="form-contact">
-        <p><label>Логин: </label> <input type="text" name="new_login" value=""/>
-        <p><label>Пароль: </label> <input type="text" name="psw" value=""/>
-        <h3>Введите серийный номер АКЭС:</h3>
-        <p><label>Серийный номер АКЭС: </label> <input type="text" name="serial_number" value=""/>
+        <div class="row p-1">
+
+            <div class="col-3">
+                <input class="form-control" placeholder="Логин" type="text" name="new_login" value=""/>
+            </div>
+        </div>
+        <div class="row  p-1">
+
+            <div class="col-3">
+                <input class="form-control" placeholder="Пароль" type="text" name="psw" value=""/>
+            </div>
+        </div>
+
+
+        <h5 class="pt-3 pb-1">Введите серийный номер АКЭС:</h5>
+        <div class="row">
+            <div class="col-3 pb-3">
+
+                <input type="text" name="serial_number" class="form-control" placeholder="Номер АКЭС" value=""/>
+
+            </div>
+        </div>
+
         <p><input class="btn btn-success" type="submit" value="Создать"/>
         <hr align=left width="300px">
     </form>

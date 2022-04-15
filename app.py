@@ -120,7 +120,7 @@ def aesc(aesc_serial_number):
         k_week = datetime.datetime.strptime(week + '-7', '%G-W%V-%u').toordinal()
         start_week = datetime.datetime.strptime(week + '-1', '%G-W%V-%u')
         end_week = datetime.datetime.strptime(week + '-7', '%G-W%V-%u')
-        period = 'C ' + start_week.strftime("%d.%m.%Y") + ' по ' + end_week.strftime("%d.%m.%Y")
+        period = 'с ' + start_week.strftime("%d.%m.%Y") + ' по ' + end_week.strftime("%d.%m.%Y")
         data = ([i for i in dataBase.get_data(id_serial_number) if
                  n_week <= datetime.datetime.strptime(i[1].split()[0], "%d.%m.%Y").toordinal() <= k_week])
         print(data)
